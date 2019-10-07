@@ -1,5 +1,5 @@
 import {assert} from './utils'
-export function parser(dom){
+export function parseDom(dom){
     assert(dom,`the element ${dom} is required`);
     assert(dom instanceof Node,`the type of ${dom} is Node`);
 
@@ -12,7 +12,7 @@ export function parser(dom){
             attrs[attr.name] = attr.value;
         })
         //3.获取标签元素的子级(children)
-        let children = Array.from(dom.childNodes).map(child => parser(child)).filter(child=>child!==undefined)
+        let children = Array.from(dom.childNodes).map(child => parseDom(child)).filter(child=>child!==undefined)
         return {
             type:'element',
             tag:domType,
