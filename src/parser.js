@@ -89,3 +89,15 @@ export function parseDirectives(attrs){
     return directives;
 
 }
+/**
+ *
+ *解析事件
+ * @export
+ * @param {*} directives
+ * @returns
+ */
+export function parseEvent(directives){
+    assert(directives,`${directives} is not found`);
+    assert(directives instanceof Array,`the type of ${directives} should is Array`);
+    return directives.filter(directive => directive.name === 'on');
+}
