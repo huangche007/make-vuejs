@@ -1,5 +1,10 @@
 import {assert} from './utils'
-
+const globalKey={
+    'new':true,
+    'for':true,
+    'while':true,
+    'class':true
+}
 export function parseExperssion(str,data){
     const arr = getExperssion(str);
     console.log('arr:',arr);
@@ -8,13 +13,15 @@ export function parseExperssion(str,data){
             return `'${st}'`;
         }else{
             const mStr = st.express.replace(/.?[\$_a-z][a-z0-9_\$]*/ig,(s) =>{
-                if(/[\$_a-z]/.test(s[0])){
-                    return `data.${s}`;
+                if(/[\$_a-z]/i.test(s[0])){
+                   return dealGlobal(data,s,`data.${s}`);
+                    // return `data.${s}`;
                 }else{
                     if(s[0] === '.'){
                         return s;
                     }else{
-                        return `${s[0]}data.${s.substring(1)}`;
+                        return s[0]+dealGlobal(data,s.substring(1),`data.${s.substring(1)}`);
+                        // return `${s[0]}data.${s.substring(1)}`;
                     }
                 }
 
@@ -25,6 +32,20 @@ export function parseExperssion(str,data){
     const filterStr = filterArr.join('');
     console.log('arr:',filterStr,eval(filterStr));
     eval(filterStr);
+}
+/**
+ *兼容处理内置的一些表达式，如Math.min(12,14)、parseFloat(x)等
+ * @param {*} data
+ * @param {*} s
+ * @param {*} exp
+ * @returns
+ */
+function dealGlobal(data,s,exp){
+    if((s in window) || globalKey[s] && !data[s]){
+        return s;
+    }else{
+        return exp;
+    }
 }
 
 function getExperssion(str){
