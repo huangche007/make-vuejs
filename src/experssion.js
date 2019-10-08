@@ -13,14 +13,14 @@ export function parseExperssion(str,data){
         }else{
             const mStr = st.express.replace(/.?[\$_a-z][a-z0-9_\$]*/ig,(s) =>{
                 if(/[\$_a-z]/i.test(s[0])){
-                //    return dealGlobal(data,s,`data.${s}`);
-                    return "data."+s;
+                   return dealGlobal(data,s,`data.${s}`);
+                    // return "data."+s;
                 }else{
                     if(s[0] === '.'){
                         return s;
                     }else{
-                        // return s[0]+dealGlobal(data,s.substring(1),`data.${s.substring(1)}`);
-                        return s[0]+"data."+s.substring(1);
+                        return s[0]+dealGlobal(data,s.substring(1),`data.${s.substring(1)}`);
+                        // return s[0]+"data."+s.substring(1);
                     }
                 }
 
