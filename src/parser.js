@@ -19,23 +19,25 @@ export function parseDom(dom){
             attrs[attr.name] = attr.value;
         })
         //3.获取标签元素的子级(children)
-        let children = Array.from(dom.childNodes).map(child => parseDom(child)).filter(child=>child!==undefined)
+        let children = Array.from(dom.childNodes).map(child => parseDom(child)).filter(child=>child!==undefined);
         return {
             type:'element',
             tag:domType,
             attrs,
             children,
             isHtml:dom.constructor!==HTMLUnknownElement && dom.constructor!==HTMLElement,
-            el:dom
+            el:dom,
+            _vue:true
         }
     }else if(dom.nodeType === document.TEXT_NODE){
-        const data = dom.data.trim();
+        let data = dom.data.trim();
         if(data){
             return {
                 type:'text',
                 tag:'text',
                 data,
-                isHtml:true
+                el:dom,
+                _vue:true
             }
         }else{
             return undefined;
@@ -52,11 +54,13 @@ export function parseDom(dom){
  */
 export function parseDirectives(attrs){
     assert(attrs,`${attrs} is not found`);
+  
     assert(attrs.constructor === Object,`${attrs} is not an object`);
-    console.log(attrs);
+    // console.log('attrs:',attrs);
     let directives = [];
     for(let key in attrs){
-        let directive = {};
+
+        let directive;
         if(key.startsWith('v-')){ //v-bind:name="banner" v-bind:title="这是banner" v-on:click="xxs" v-if="isShow"
             // 名称：参数
             let [name,arg] = key.split(":");
