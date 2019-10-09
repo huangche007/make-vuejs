@@ -61,14 +61,38 @@ export default {
         },
         destory:null
     },
-    'if'(){
-
+    'if':{
+        init(vnode,directive){
+            // vnode.__parentNode = vnode._el.parentNode;
+            const tempHolder = document.createComment('');
+            vnode.__tempHolder = tempHolder;
+            vnode.__el = vnode._el;
+        },
+        update(vnode,directive){
+            const res = parseExperssion(directive.value,vnode._component.data);
+            if(res){
+                // if(vnode.__tempHolder.parentNode){
+                //     vnode.__parentNode.replaceChild(
+                //         vnode.__el,
+                //         vnode.__tempHolder
+                //     )
+                // }
+                vnode.__tempHolder.replaceWith(vnode.__el);
+            }else{
+                vnode.__el.replaceWith(vnode.__tempHolder);
+            }
+        },
+        destory(vnode,directive){}
     },
-    'else-if'(){
-
+    'else-if':{
+        init(vnode,directive){},
+        update(vnode,directive){},
+        destory(vnode,directive){}
     },
-    'else'(){
-
+    'else':{
+        init(vnode,directive){},
+        update(vnode,directive){},
+        destory(vnode,directive){}
     },
     'html':{
         init:null,
