@@ -3,10 +3,15 @@ import {assert,getDom} from './utils'
 import {parseDom, parseDirectives} from './parser';
 import {createVDOM} from './vdom';
 import {createProxy} from './proxy'
+import directives from './directives';
 export default class HCVue{
     constructor(options){
         assert(options,`${options} must be have`);
         assert(options.el,`${options.el} is not an element`);
+        this._directives = {
+            ...directives,
+            ...options.directives
+        }
         const el = getDom(options.el);
         const treeDOM = parseDom(el);
         const vTreeDOM = createVDOM(treeDOM,this);
@@ -16,6 +21,7 @@ export default class HCVue{
         this._staticData = {
             ...options.methods
         }
+
         this.data = createProxy(options.data,this._staticData,() =>{
             this.render();
         })

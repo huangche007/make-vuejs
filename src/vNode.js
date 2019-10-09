@@ -3,6 +3,7 @@ import HCNode from './hcNode'
 import {assert} from './utils';
 import {parseDirectives,parseEvent} from './parser';
 import directives from './directives';
+// import directives from './directives';
 export default class VNode extends HCNode{
     constructor(options,cmp){
         assert(options,`${options} is not found`);
@@ -31,23 +32,21 @@ export default class VNode extends HCNode{
      * @memberof VNode
      */
     _renderDirectives(type){
-        // console.log('type:',type);
         //由于事件指令是在初始化时进行了处理，故优先处理model指令
-        this.$directives.filter(directive => directive.name==='model').forEach(directive => {
-            const directiveObj = directives[directive.name];
-            // console.log('directiveFunc:',directive.name,directiveObj[type],type,directiveObj);
-            assert(directiveObj,`directive ${directive} is not in ${directiveObj}`);
-            const directiveFunc = directiveObj[type];
-           
-            if(directiveFunc){
-                assert(typeof directiveFunc ==='function',`${directiveFunc} is not a function`);
-                directiveFunc(this,directive);
-            }
-           
-        })
-
-        this.$directives.filter(directive => directive.name!=='model').forEach(directive => {
-            const directiveObj = directives[directive.name];
+        this._handleDiffTypeDirectives(this.$directives.filter(directive => directive.name==='model'),type);
+        this._handleDiffTypeDirectives(this.$directives.filter(directive => directive.name!=='model'),type);
+    }
+    /**
+     *
+     *处理不同状态下的指令
+     * @param {*} arr
+     * @param {*} type
+     * @memberof VNode
+     */
+    _handleDiffTypeDirectives(arr,type){
+        arr.forEach(directive => {
+            // const directiveObj = directives[directive.name];
+            const directiveObj = this._component._directives[directive.name];//新增了自定义指令
             assert(directiveObj,`directive ${directive} is not in ${directiveObj}`);
             const directiveFunc = directiveObj[type];
             if(directiveFunc){
