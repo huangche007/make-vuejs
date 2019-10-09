@@ -26,10 +26,16 @@ export function createProxy(data,cb){
     }
     return new Proxy(res,{
         get(data,key){
+            if(key==="addEvent"){
+                return function(key,value){
+                    data[key] = value;
+                }
+            }
             return data[key];
         },
         set(data,key,value){
             if(typeof value === 'object'){
+                console.log('value:',value);
                 data[key] = createProxy(value,cb);
             }else{
                 data[key] = value;

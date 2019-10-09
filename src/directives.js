@@ -16,8 +16,28 @@ export default {
         },
         destory:null
     },
-    'on'(){
-
+    'on':{//{name: "on", arg: click, value: "a+b"}
+        init(vnode,directive){
+            vnode._el.addEventListener(directive.arg,function(ev){
+                //value-->fn
+                //value-->fn()、fn(a+b)
+                //value-->'a+b'、add(a,b)...
+                let str = directive.value;
+                if(/^[\$_a-z][a-z0-9_\$]*$/i.test(str)){
+                    str+='($event)'
+                }
+                vnode._component.data.addEvent('$event',ev);
+                parseExperssion(str,vnode._component.data);
+            },false)
+        }
+    },
+    'model':{
+        init(vnode,directive){
+            //增加一个v-bind指令
+            vnode.$directives.push({name: "bind", arg: 'value', value: directive.value});
+            //增加一个事件指令
+            vnode.$directives.push({name: "on", arg: 'input', value: `${directive.value}=$event.target.value`})
+        }
     },
     'show':{
         init:null,
