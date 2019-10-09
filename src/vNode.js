@@ -14,19 +14,39 @@ export default class VNode extends HCNode{
         this.type = options.tag;
         this.$attrs = options.attrs;
         this.$directives = parseDirectives(this.$attrs);
-        this.$listener = parseEvent(this.$directives);
+        this.$listeners = parseEvent(this.$directives);
         this._renderDirectives('init');
         this.status = 'init';
     }
     render(){
         //渲染自己-指令(属性)
         this._renderDirectives('update');
-        this.status = 'update';
         this.$children.forEach(child => child.render());
+        this.status = 'update';
     }
-
+    /**
+     *
+     *指令的解析渲染
+     * @param {*} type
+     * @memberof VNode
+     */
     _renderDirectives(type){
-        this.$directives.forEach(directive => {
+        // console.log('type:',type);
+        //由于事件指令是在初始化时进行了处理，故优先处理model指令
+        this.$directives.filter(directive => directive.name==='model').forEach(directive => {
+            const directiveObj = directives[directive.name];
+            // console.log('directiveFunc:',directive.name,directiveObj[type],type,directiveObj);
+            assert(directiveObj,`directive ${directive} is not in ${directiveObj}`);
+            const directiveFunc = directiveObj[type];
+           
+            if(directiveFunc){
+                assert(typeof directiveFunc ==='function',`${directiveFunc} is not a function`);
+                directiveFunc(this,directive);
+            }
+           
+        })
+
+        this.$directives.filter(directive => directive.name!=='model').forEach(directive => {
             const directiveObj = directives[directive.name];
             assert(directiveObj,`directive ${directive} is not in ${directiveObj}`);
             const directiveFunc = directiveObj[type];
