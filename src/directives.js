@@ -13,11 +13,13 @@ export default {
             assert(directive.value);
             let res = parseExperssion(directive.value,vnode._component.data);
             vnode._el.setAttribute(directive.arg,res);
+            vnode._el[directive.arg] = res;
         },
         destory:null
     },
     'on':{//{name: "on", arg: click, value: "a+b"}
         init(vnode,directive){
+            console.log('directive.arg:',directive.arg);
             vnode._el.addEventListener(directive.arg,function(ev){
                 //value-->fn
                 //value-->fn()、fn(a+b)
@@ -26,7 +28,7 @@ export default {
                 if(/^[\$_a-z][a-z0-9_\$]*$/i.test(str)){
                     str+='($event)'
                 }
-                vnode._component.data.addEvent('$event',ev);
+                vnode._component._staticData.$event = ev;
                 parseExperssion(str,vnode._component.data);
             },false)
         }
@@ -36,7 +38,7 @@ export default {
             //增加一个v-bind指令
             vnode.$directives.push({name: "bind", arg: 'value', value: directive.value});
             //增加一个事件指令
-            vnode.$directives.push({name: "on", arg: 'input', value: `${directive.value}=$event.target.value`})
+            vnode.$directives.push({name: "on", arg: 'input', value: `${directive.value}=$event.target.value`});
         }
     },
     'show':{
