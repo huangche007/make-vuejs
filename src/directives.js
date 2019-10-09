@@ -19,7 +19,6 @@ export default {
     },
     'on':{//{name: "on", arg: click, value: "a+b"}
         init(vnode,directive){
-            console.log('directive.arg:',directive.arg);
             vnode._el.addEventListener(directive.arg,function(ev){
                 //value-->fn
                 //value-->fn()、fn(a+b)
@@ -39,6 +38,11 @@ export default {
             vnode.$directives.push({name: "bind", arg: 'value', value: directive.value});
             //增加一个事件指令
             vnode.$directives.push({name: "on", arg: 'input', value: `${directive.value}=$event.target.value`});
+        }
+    },
+    'cloak':{
+        update(vnode){
+            vnode._el.removeAttribute('v-cloak');
         }
     },
     'show':{
