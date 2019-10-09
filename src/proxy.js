@@ -16,6 +16,7 @@ export function createProxy(data,cb){
     }else{
         res = {};
         for(let key in data){
+            assert(!key.startsWith('$'),`variable name is not start with $`);
             if(typeof data[key] ==='object'){
                 res[key] = createProxy(data[key],cb);
             }else{
@@ -28,7 +29,12 @@ export function createProxy(data,cb){
             return data[key];
         },
         set(data,key,value){
-            data[key] = value;
+            if(typeof value === 'object'){
+                data[key] = createProxy(value,cb);
+            }else{
+                data[key] = value;
+            }
+
             cb(key);
             return true;
         }
