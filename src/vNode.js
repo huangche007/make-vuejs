@@ -1,8 +1,10 @@
 
 import HCNode from './hcNode'
 import {assert} from './utils';
-import {parseDirectives,parseEvent} from './parser';
+import {parseDirectives,parseEvent,parseDom} from './parser';
 import directives from './directives';
+import {createVDOM} from './vdom';
+import {createProxy} from './proxy';
 // import directives from './directives';
 export default class VNode extends HCNode{
     constructor(options,cmp){
@@ -14,10 +16,15 @@ export default class VNode extends HCNode{
         super(options.el,cmp);
         this.type = options.tag;
         this.$attrs = options.attrs;
+        
         this.$directives = parseDirectives(this.$attrs);
         this.$listeners = parseEvent(this.$directives);
         this._renderDirectives('init');
+      
         this.status = 'init';
+        this.data = createProxy({},cmp.data,() =>{
+            this.render();
+        })
     }
     render(){
         //渲染自己-指令(属性)
@@ -55,5 +62,11 @@ export default class VNode extends HCNode{
             }
            
         })
+    }
+    clone(){
+       let vnode = parseDom(this._el.cloneNode(true));
+       delete vnode.attrs['v-for'];
+       let vTree = createVDOM(vnode,this._component);
+       return vTree;
     }
 }

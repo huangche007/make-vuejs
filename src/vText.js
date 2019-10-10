@@ -14,7 +14,6 @@ export default class VText extends HCNode{
 
     }
     render(){
-        // console.log('this._component:',this._component);
         const strExp = complieStringTemplate(this._strTemplate,this._component.data);
         this._el.data = strExp;
         this.status = 'update';

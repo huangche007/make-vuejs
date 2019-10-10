@@ -10,28 +10,28 @@ import {assert} from './utils';
  * @param {*} node
  * @returns
  */
-export function createVDOM(node,cmp){
+export function createVDOM(node,cmp,parent){
     assert(node,`${node} is not found`);
     assert(node._vue);
     assert(node.type === "element" || node.type === "text");
     assert(node.el,`${node.el} is not found`);
     assert(cmp,`${cmp} is not a component`);
-    assert(cmp instanceof VComponent || cmp instanceof HCVue,`${cmp} is not exntends VComponent`);
+    assert(cmp instanceof VComponent ||cmp instanceof VNode || cmp instanceof HCVue,`${cmp} is not exntends VComponent`);
     if(node.type==="element"){
-        let instance;
+        let parent;
         if(node.isHtml){ //VNode
-            instance = new VNode(node,cmp);
+            parent = new VNode(node,cmp);
         }else{
             //VComponent
-            instance = new VComponent(node,cmp);           
+            parent = new VComponent(node,cmp);           
         }
-        instance.$children = node.children.map(child => {
-            return createVDOM(child,cmp);
+        parent.$children = node.children.map(child => {
+            return createVDOM(child,cmp,parent);
         });
         
-        return instance;
+        return parent;
     }else{
         //VText
-        return new VText(node,cmp);
+        return new VText(node,parent);
     }
 }
